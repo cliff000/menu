@@ -93,14 +93,20 @@ public:
 
 class ChoiceMgr
 {
+protected:
 	ChoiceVec cho;
 	Cursor *crsr;
-protected:
-	void MoveCursor();
+
 public:
 	ChoiceMgr() {};
 	~ChoiceMgr();
-	void Process();
-	void Draw();
+	virtual void Process();
+	virtual void Draw();
 	void setChoices(Choice** c, int length);
+};
+
+class ChoiceMgr1D : public ChoiceMgr
+{
+public:
+	void Process();
 };

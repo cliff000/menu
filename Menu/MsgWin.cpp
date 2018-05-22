@@ -71,27 +71,8 @@ void SurroundCursor::Draw() {
 ChoiceMgr::~ChoiceMgr() {
 }
 
-void ChoiceMgr::MoveCursor() {
-	//次へ進める
-	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
-		if (*crsr != cho.begin())
-			--*crsr;
-		else
-			*crsr = cho.end() - 1;
-	}
-	//前に戻す
-	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_LEFT] == 1) {
-		if (*crsr != cho.end() - 1)
-			++*crsr;
-		else
-			*crsr = cho.begin();
-	}
-}
-
 void ChoiceMgr::Process() {
 	if (cho.size() != 0) {
-		MoveCursor();
-
 		//選択肢の更新
 		for (auto &i : cho) {
 			i->Process();
@@ -120,4 +101,23 @@ void ChoiceMgr::setChoices(Choice** c, int length) {
 
 	crsr = new SurroundCursor();
 	crsr->Create(cho.begin());
+}
+
+void ChoiceMgr1D::Process() {
+	//次へ進める
+	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
+		if (*crsr != cho.begin())
+			--*crsr;
+		else
+			*crsr = cho.end() - 1;
+	}
+	//前に戻す
+	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_LEFT] == 1) {
+		if (*crsr != cho.end() - 1)
+			++*crsr;
+		else
+			*crsr = cho.begin();
+	}
+
+	ChoiceMgr::Process();//親クラスのProcess()
 }

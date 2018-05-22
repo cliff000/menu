@@ -15,7 +15,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		std::string str = "choice" + std::to_string(i + 1);
 		c[i]->setPos(200, 100 + 50 * i)->setString(str.c_str());
 	}
-	ChoiceMgr* mgr = new ChoiceMgr();
+	ChoiceMgr* mgr = new ChoiceMgr1D();
 	mgr->setChoices(c, 5);
 
 	// while(裏画面を表画面に反映, メッセージ処理, 画面クリア, キー更新)
