@@ -57,22 +57,23 @@ public:
 typedef std::vector<Choice*> ChoiceVec;
 typedef std::vector<Choice*>::iterator ChoiceItr;
 
-class Cursor
-{
-	int dx = 0, dy = 0;
+//カーソルの親クラス(表示未定義)
+class Cursor {
+protected:
+	int dx = 0, dy = 0; //座標の補正値
 	ChoiceItr itr;
 	ChoiceItr Move(int n);
-	
+
 public:
 	Cursor() {};
-	Cursor(ChoiceItr i) { itr = i;  (*itr)->Select(); }//最初にこれを実行
+	void Create(ChoiceItr i) { itr = i;  (*itr)->Select(); }//最初にこれを実行
 	virtual void Process();
-	virtual void Draw();
+	virtual void Draw() {};
 
-	Choice* operator *() { return *itr; }
-	void operator =(ChoiceItr i) { 
+	Choice * operator *() { return *itr; }
+	void operator =(ChoiceItr i) {
 		(*itr)->Select(false);
-		itr = i; 
+		itr = i;
 		(*itr)->Select();
 	}
 	ChoiceItr operator ++() { return Move(1); }
@@ -83,11 +84,17 @@ public:
 	bool operator ==(ChoiceItr i) { return (itr == i) ? true : false; }
 };
 
+class SurroundCursor : public Cursor
+{
+public:
+	virtual void Draw();
+};
+
 
 class ChoiceMgr
 {
 	ChoiceVec cho;
-	Cursor crsr;
+	Cursor *crsr;
 protected:
 	void MoveCursor();
 public:

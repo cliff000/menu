@@ -54,16 +54,16 @@ ChoiceItr Cursor::Move(int n) {
 	return itr;
 }
 
-void Cursor::Draw() {
+void Cursor::Process() {
+	if (Key[KEY_INPUT_Z] == 1)
+		(*itr)->Click();
+}
+
+void SurroundCursor::Draw() {
 	int x = (*itr)->getPosX() + dx;
 	int y = (*itr)->getPosY() + dy;
 
 	DrawBox(x, y, x + 100, y + 50, 0x00ff00, false);
-}
-
-void Cursor::Process() {
-	if (Key[KEY_INPUT_Z] == 1)
-		(*itr)->Click();
 }
 
 //------------------------------------------------
@@ -74,17 +74,17 @@ ChoiceMgr::~ChoiceMgr() {
 void ChoiceMgr::MoveCursor() {
 	//次へ進める
 	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
-		if (crsr != cho.begin())
-			--crsr;
+		if (*crsr != cho.begin())
+			--*crsr;
 		else
-			crsr = cho.end() - 1;
+			*crsr = cho.end() - 1;
 	}
 	//前に戻す
 	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_LEFT] == 1) {
-		if (crsr != cho.end() - 1)
-			++crsr;
+		if (*crsr != cho.end() - 1)
+			++*crsr;
 		else
-			crsr = cho.begin();
+			*crsr = cho.begin();
 	}
 }
 
@@ -98,7 +98,7 @@ void ChoiceMgr::Process() {
 		}
 
 		//カーソルの更新
-		crsr.Process();
+		crsr->Process();
 	}
 }
 
@@ -109,7 +109,7 @@ void ChoiceMgr::Draw() {
 			i->Draw();
 
 		//カーソルの描画
-		crsr.Draw();
+		crsr->Draw();
 	}
 }
 
@@ -118,5 +118,6 @@ void ChoiceMgr::setChoices(Choice** c, int length) {
 	for(int i = 0; i < length; i++)
 		cho.push_back(c[i]);
 
-	crsr = Cursor(cho.begin());
+	crsr = new SurroundCursor();
+	crsr->Create(cho.begin());
 }
