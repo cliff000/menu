@@ -1,23 +1,35 @@
 #pragma once
 #include <vector>
-#include <map>
 #include "keyboard.h"
 
 using namespace std;
 
-class MsgWin
+class WindowContent
 {
 public:
+	virtual ~WindowContent() {}
 	virtual void Process() = 0;
 	virtual void Draw() = 0;
 };
 
-class ChoiceWin : public MsgWin
+
+class MsgWindow
 {
+	int x = 0, y = 0;
+	int w, h;
+	int screen;
+	vector<WindowContent*> content;
+
 public:
-	void Process();
-	void Draw();
+	MsgWindow() {}
+	MsgWindow(WindowContent *c);
+	virtual void Process();
+	virtual void Draw();
+	MsgWindow* setPos(int x, int y) { this->x = x; this->y = y; return this; }
+	MsgWindow* setSize(int w, int h) { this->w = w; this->h = h; return this; }
+	void add(WindowContent *c) { content.push_back(c); }
 };
+
 
 class FontString {
 	static int font;
@@ -38,7 +50,7 @@ public:
 class Choice
 {
 	int x, y;
-	FontString str ;
+	FontString str;
 	int lngth;
 	bool select = false;
 
@@ -57,20 +69,19 @@ public:
 typedef std::vector<Choice*> ChoiceVec;
 typedef std::vector<Choice*>::iterator ChoiceItr;
 
-//カーソルの親クラス(表示未定義)
-class Cursor {
-protected:
-	int dx = 0, dy = 0; //座標の補正値
+class Cursor
+{
+	int dx = 0, dy = 0;
 	ChoiceItr itr;
 	ChoiceItr Move(int n);
 
 public:
-	Cursor() {};
-	void Create(ChoiceItr i) { itr = i;  (*itr)->Select(); }//最初にこれを実行
+	Cursor(ChoiceItr i);
 	virtual void Process();
-	virtual void Draw() {};
+	virtual void Draw();
 
-	Choice * operator *() { return *itr; }
+	Choice* operator *() { return *itr; }
+	Choice* operator ->() { return *itr; }
 	void operator =(ChoiceItr i) {
 		(*itr)->Select(false);
 		itr = i;
@@ -84,29 +95,24 @@ public:
 	bool operator ==(ChoiceItr i) { return (itr == i) ? true : false; }
 };
 
-class SurroundCursor : public Cursor
-{
-public:
-	virtual void Draw();
-};
 
-
-class ChoiceMgr
+class ChoiceMgr : public WindowContent
 {
 protected:
 	ChoiceVec cho;
-	Cursor *crsr;
-
+	Cursor *crsr = nullptr;
+	virtual void MoveCursor();
 public:
-	ChoiceMgr() {};
+	ChoiceMgr() {}
 	~ChoiceMgr();
-	virtual void Process();
-	virtual void Draw();
-	void setChoices(Choice** c, int length);
+	void Process();
+	void Draw();
+	void add(Choice* c);
 };
 
-class ChoiceMgr1D : public ChoiceMgr
+class ChoiceMgr2D : public ChoiceMgr
 {
-public:
-	void Process();
+protected:
+	vector<ChoiceVec> cho2d;
+	void MoveCursor();
 };

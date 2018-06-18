@@ -4,6 +4,28 @@
 #define safe_delete(x) delete x; x = nullptr;
 
 
+MsgWindow::MsgWindow(WindowContent *c) {
+	content.push_back(c);
+}
+
+void MsgWindow::Process() {
+	for (auto &i : content)
+		i->Process();
+}
+
+void MsgWindow::Draw() {
+	int screen = MakeScreen(w, h, TRUE);
+	SetDrawScreen(screen);
+	for (auto &i : content)
+		i->Draw();
+	DrawBox(0, 0, w, h, 0xffffff, FALSE);
+
+	SetDrawScreen(DX_SCREEN_BACK);
+	DrawGraph(x, y, screen, FALSE);
+}
+
+//-----------------------------------------------------------------------------
+
 int FontString::font = 0;
 int FontString::color = 0xffffff;
 
@@ -40,12 +62,16 @@ void Choice::Draw() {
 		str.Draw(x, y);
 }
 
-Choice* Choice::setString(const char* string) { 
-	str = string;  
-	return this; 
+Choice* Choice::setString(const char* string) {
+	str = string;
+	return this;
 }
 
 //------------------------------------------------
+Cursor::Cursor(ChoiceItr i) {
+	itr = i;
+	(*itr)->Select();
+}
 
 ChoiceItr Cursor::Move(int n) {
 	(*itr)->Select(false);
@@ -54,16 +80,16 @@ ChoiceItr Cursor::Move(int n) {
 	return itr;
 }
 
-void Cursor::Process() {
-	if (Key[KEY_INPUT_Z] == 1)
-		(*itr)->Click();
-}
-
-void SurroundCursor::Draw() {
+void Cursor::Draw() {
 	int x = (*itr)->getPosX() + dx;
 	int y = (*itr)->getPosY() + dy;
 
 	DrawBox(x, y, x + 100, y + 50, 0x00ff00, false);
+}
+
+void Cursor::Process() {
+	if (Key[KEY_INPUT_Z] == 1)
+		(*itr)->Click();
 }
 
 //------------------------------------------------
@@ -71,8 +97,27 @@ void SurroundCursor::Draw() {
 ChoiceMgr::~ChoiceMgr() {
 }
 
+void ChoiceMgr::MoveCursor() {
+	//次へ進める
+	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_LEFT] == 1) {
+		if (*crsr != cho.begin())
+			--crsr;
+		else
+			*crsr = cho.end() - 1;
+	}
+	//前に戻す
+	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
+		if (*crsr != cho.end() - 1)
+			++crsr;
+		else
+			*crsr = cho.begin();
+	}
+}
+
 void ChoiceMgr::Process() {
 	if (cho.size() != 0) {
+		MoveCursor();
+
 		//選択肢の更新
 		for (auto &i : cho) {
 			i->Process();
@@ -94,30 +139,15 @@ void ChoiceMgr::Draw() {
 	}
 }
 
-void ChoiceMgr::setChoices(Choice** c, int length) {
-	//選択肢をセット
-	for(int i = 0; i < length; i++)
-		cho.push_back(c[i]);
-
-	crsr = new SurroundCursor();
-	crsr->Create(cho.begin());
+void ChoiceMgr::add(Choice* c) {
+	cho.push_back(c);
+	auto itr = cho.begin();
+	//if (crsr == nullptr && cho.empty() == false)
+	//crsr = new Cursor(cho.begin());
 }
 
-void ChoiceMgr1D::Process() {
-	//次へ進める
-	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
-		if (*crsr != cho.begin())
-			--*crsr;
-		else
-			*crsr = cho.end() - 1;
-	}
-	//前に戻す
-	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_LEFT] == 1) {
-		if (*crsr != cho.end() - 1)
-			++*crsr;
-		else
-			*crsr = cho.begin();
-	}
+//--------------------------------------------------------------
 
-	ChoiceMgr::Process();//親クラスのProcess()
+void ChoiceMgr2D::MoveCursor() {
+
 }
