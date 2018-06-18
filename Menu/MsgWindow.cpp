@@ -4,8 +4,14 @@
 #define safe_delete(x) delete x; x = nullptr;
 
 
-MsgWindow::MsgWindow(WindowContent *c) {
-	content.push_back(c);
+MsgWindow::MsgWindow(int x, int y, int w, int h) {
+	setPos(x, y);
+	setSize(w, h);
+}
+
+MsgWindow::~MsgWindow() {
+	for (auto& i : content)
+		delete i;
 }
 
 void MsgWindow::Process() {
@@ -22,4 +28,8 @@ void MsgWindow::Draw() {
 
 	SetDrawScreen(DX_SCREEN_BACK);
 	DrawGraph(x, y, screen, FALSE);
+}
+
+void MsgWindow::add(WindowContent *c) { 
+	content.push_back(c); 
 }

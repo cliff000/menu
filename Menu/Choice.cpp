@@ -7,10 +7,7 @@ void Choice::Process() {
 }
 
 void Choice::Draw() {
-	if (select == true)
-		str.Draw(x - 20, y);
-	else
-		str.Draw(x, y);
+	str.Draw(x, y);
 }
 
 Choice* Choice::setString(const char* string) {
@@ -29,7 +26,7 @@ void Cursor::Draw() {
 	int x = (*cho)[slct]->getX() + dx;
 	int y = (*cho)[slct]->getY() + dy;
 
-	DrawBox(x, y, x + 100, y + 50, 0x00ff00, false);
+	DrawFormatString(x - 25, y, 0xffffff, "☆");
 }
 
 void Cursor::Process() {
@@ -70,21 +67,14 @@ ChoiceMgr::~ChoiceMgr() {
 }
 
 void ChoiceMgr::Process() {
-	//選択肢の更新
-	for (auto& i : cho) {
+	for (auto& i : cho)
 		i->Process();
-	}
-
-	//カーソルの更新
 	crsr->Process();
 }
 
 void ChoiceMgr::Draw() {
-	//選択肢の描画
 	for (auto& i : cho)
 		i->Draw();
-
-	//カーソルの描画
 	crsr->Draw();
 }
 

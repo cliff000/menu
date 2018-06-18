@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ChangeWindowMode(TRUE); // ウィンドウモードに設定
 	//SetWindowSizeExtendRate(2);//画面を拡大
 	SetWindowSizeChangeEnableFlag(TRUE, TRUE);//画面の大きさを自由に変えられるようにする
-	DxLib_Init(); // DXライブラリ初期化処理
+	DxLib_Init(); //DXライブラリ初期化処理
 	SetDrawScreen(DX_SCREEN_BACK); //描画先を裏画面に設定
 
 	
@@ -16,10 +16,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (int i = 0; i < 5; i++) {
 		Choice* c = new Choice();
 		std::string str = "choice" + std::to_string(i + 1);
-		c->setPos(200, 100 + 50 * i)->setString(str.c_str());
+		c->setPos(50, 50 + 50 * i)->setString(str.c_str());
 		mgr->add(c);
 	}
-	MsgWindow* mw = new MsgWindow(mgr);
+	MsgWindow* mw = new MsgWindow(50, 50, 300, 300);
+	mw->add(mgr);
 
 	// while(裏画面を表画面に反映, メッセージ処理, 画面クリア, キー更新)
 	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0 && gpUpdateKey() == 0) {

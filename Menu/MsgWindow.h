@@ -21,10 +21,11 @@ class MsgWindow
 
 public:
 	MsgWindow() {}
-	MsgWindow(WindowContent *c);
+	MsgWindow(int x, int y, int w, int h);
+	~MsgWindow();
 	virtual void Process();
 	virtual void Draw();
 	MsgWindow* setPos(int x, int y) { this->x = x; this->y = y; return this; }
 	MsgWindow* setSize(int w, int h) { this->w = w; this->h = h; return this; }
-	void add(WindowContent *c) { content.push_back(c); }
+	void add(WindowContent *c);
 };
