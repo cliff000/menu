@@ -1,50 +1,7 @@
 #pragma once
 #include <vector>
-#include "keyboard.h"
-
-using namespace std;
-
-class WindowContent
-{
-public:
-	virtual ~WindowContent() {}
-	virtual void Process() = 0;
-	virtual void Draw() = 0;
-};
-
-
-class MsgWindow
-{
-	int x = 0, y = 0;
-	int w, h;
-	int screen;
-	vector<WindowContent*> content;
-
-public:
-	MsgWindow() {}
-	MsgWindow(WindowContent *c);
-	virtual void Process();
-	virtual void Draw();
-	MsgWindow* setPos(int x, int y) { this->x = x; this->y = y; return this; }
-	MsgWindow* setSize(int w, int h) { this->w = w; this->h = h; return this; }
-	void add(WindowContent *c) { content.push_back(c); }
-};
-
-
-class FontString {
-	static int font;
-	static int color;
-	string str;
-
-public:
-	static void Load(const char *FileName, int EdgeSize = 0, int color = 0xffffff);
-	static void Load(int font, int color = 0xffffff);
-	FontString() {};
-	FontString(const char* str);
-	void Draw(int x, int y);
-
-	void operator =(const char* str) { this->str = str; }
-};
+#include "FontString.h"
+#include "MsgWindow.h"
 
 
 class Choice
@@ -108,11 +65,4 @@ public:
 	void Process();
 	void Draw();
 	void add(Choice* c);
-};
-
-class ChoiceMgr2D : public ChoiceMgr
-{
-protected:
-	vector<ChoiceVec> cho2d;
-	void MoveCursor();
 };
