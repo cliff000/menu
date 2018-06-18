@@ -1,4 +1,4 @@
-#include "MsgWin.h"
+#include "MsgWindow.h"
 #include "DxLib.h"
 
 #define safe_delete(x) delete x; x = nullptr;

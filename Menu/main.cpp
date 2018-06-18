@@ -1,6 +1,8 @@
 #include "Dxlib.h"
-#include "MsgWin.h"
+#include "MsgWindow.h"
+#include "Choice.h"
 #include <string>
+#include "keyboard.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ChangeWindowMode(TRUE); // ウィンドウモードに設定
@@ -10,18 +12,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	SetDrawScreen(DX_SCREEN_BACK); //描画先を裏画面に設定
 
 	
-	Choice* c[5] = { new Choice(), new Choice(), new Choice(), new Choice(), new Choice(), };
+	ChoiceMgr* mgr = new ChoiceMgr();
 	for (int i = 0; i < 5; i++) {
+		Choice* c = new Choice();
 		std::string str = "choice" + std::to_string(i + 1);
-		c[i]->setPos(200, 100 + 50 * i)->setString(str.c_str());
+		c->setPos(200, 100 + 50 * i)->setString(str.c_str());
+		mgr->add(c);
 	}
-	ChoiceMgr* mgr = new ChoiceMgr1D();
-	mgr->setChoices(c, 5);
+	MsgWindow* mw = new MsgWindow(mgr);
 
 	// while(裏画面を表画面に反映, メッセージ処理, 画面クリア, キー更新)
 	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0 && gpUpdateKey() == 0) {
-		mgr->Process();
-		mgr->Draw();
+		mw->Process();
+		mw->Draw();
 	}
 
 	DxLib_End(); // DXライブラリ終了処理

@@ -19,80 +19,75 @@ Choice* Choice::setString(const char* string) {
 }
 
 //------------------------------------------------
-Cursor::Cursor(ChoiceItr i) {
-	itr = i;
-	(*itr)->Select();
-}
-
-ChoiceItr Cursor::Move(int n) {
-	(*itr)->Select(false);
-	itr += n;
-	(*itr)->Select();
-	return itr;
+Cursor::Cursor(vector<Choice*>* cho) {
+	this->cho = cho;
 }
 
 void Cursor::Draw() {
-	int x = (*itr)->getPosX() + dx;
-	int y = (*itr)->getPosY() + dy;
+	if ((*cho).size() == 0) return;
+
+	int x = (*cho)[slct]->getX() + dx;
+	int y = (*cho)[slct]->getY() + dy;
 
 	DrawBox(x, y, x + 100, y + 50, 0x00ff00, false);
 }
 
 void Cursor::Process() {
+	if ((*cho).size() == 0) return;
+
+	//選択解除
+	(*cho)[slct]->Select(false);
+
+	//次へ進める
+	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
+		if (slct < (*cho).size() - 1)
+			++slct;
+		else
+			slct = 0;
+	}
+	//前に戻す
+	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_LEFT] == 1) {
+		if (slct > 0)
+			--slct;
+		else
+			slct = (*cho).size() - 1;
+	}
+
+	//選択
+	(*cho)[slct]->Select();
+
+	//決定
 	if (Key[KEY_INPUT_Z] == 1)
-		(*itr)->Click();
+		(*cho)[slct]->Click();
 }
 
 //------------------------------------------------
 
 ChoiceMgr::~ChoiceMgr() {
-}
-
-void ChoiceMgr::MoveCursor() {
-	//次へ進める
-	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_LEFT] == 1) {
-		if (*crsr != cho.begin())
-			--crsr;
-		else
-			*crsr = cho.end() - 1;
-	}
-	//前に戻す
-	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
-		if (*crsr != cho.end() - 1)
-			++crsr;
-		else
-			*crsr = cho.begin();
-	}
+	for (auto& i : cho)
+		delete i;
+	delete crsr;
 }
 
 void ChoiceMgr::Process() {
-	if (cho.size() != 0) {
-		MoveCursor();
-
-		//選択肢の更新
-		for (auto &i : cho) {
-			i->Process();
-		}
-
-		//カーソルの更新
-		crsr->Process();
+	//選択肢の更新
+	for (auto& i : cho) {
+		i->Process();
 	}
+
+	//カーソルの更新
+	crsr->Process();
 }
 
 void ChoiceMgr::Draw() {
-	if (cho.size() != 0) {
-		//選択肢の描画
-		for (auto &i : cho)
-			i->Draw();
+	//選択肢の描画
+	for (auto& i : cho)
+		i->Draw();
 
-		//カーソルの描画
-		crsr->Draw();
-	}
+	//カーソルの描画
+	crsr->Draw();
 }
 
 void ChoiceMgr::add(Choice* c) {
 	cho.push_back(c);
-	auto itr = cho.begin();
-	//if (crsr == nullptr && cho.empty() == false)
-	//crsr = new Cursor(cho.begin());
 }
