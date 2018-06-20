@@ -10,16 +10,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	SetWindowSizeChangeEnableFlag(TRUE, TRUE);//画面の大きさを自由に変えられるようにする
 	DxLib_Init(); //DXライブラリ初期化処理
 	SetDrawScreen(DX_SCREEN_BACK); //描画先を裏画面に設定
-
 	
+	ChangeFont("ＭＳ 明朝");
+
 	ChoiceMgr* mgr = new ChoiceMgr();
 	for (int i = 0; i < 5; i++) {
 		Choice* c = new Choice();
 		std::string str = "choice" + std::to_string(i + 1);
-		c->setPos(50, 50 + 50 * i)->setString(str.c_str());
+		//c->setPos(50, 50 + 50 * i)->setString(str.c_str());
+		c->setPos(GetRand(300), GetRand(300))->setString(str.c_str());
 		mgr->add(c);
 	}
-	MsgWindow* mw = new MsgWindow(50, 50, 300, 300);
+	MsgWindow* mw = new MsgWindow(150, 50, 300, 300);
 	mw->add(mgr);
 
 	// while(裏画面を表画面に反映, メッセージ処理, 画面クリア, キー更新)
