@@ -18,7 +18,7 @@ Choice* Choice::setString(const char* string) {
 }
 
 //------------------------------------------------
-Cursor::Cursor(vector<Choice*>* cho) {
+void Cursor::set(vector<Choice*>* cho) {
 	this->cho = cho;
 }
 
@@ -31,18 +31,18 @@ void Cursor::Draw() {
 	DrawFormatString(x - 25, y, 0xffffff, "☆");
 }
 
+
 void Cursor::Process() {
 	if ((*cho).size() == 0) return;
 
-	//次へ進める
-	if (Key[KEY_INPUT_DOWN] == 1 || Key[KEY_INPUT_RIGHT] == 1) {
+	//カーソルの移動
+	if (Key[KEY_INPUT_DOWN] == 1 && Key[KEY_INPUT_RIGHT] == 1) {
 		if (slct < (*cho).size() - 1)
 			++slct;
 		else
 			slct = 0;
 	}
-	//前に戻す
-	if (Key[KEY_INPUT_UP] == 1 || Key[KEY_INPUT_LEFT] == 1) {
+	if (Key[KEY_INPUT_UP] == 1 && Key[KEY_INPUT_LEFT] == 1) {
 		if (slct > 0)
 			--slct;
 		else
@@ -57,15 +57,10 @@ void Cursor::Process() {
 		(*cho)[slct]->Click();
 }
 
-
-
-Cursor2D::Cursor2D(vector<Choice*>* cho) {
-	this->cho = cho;
-}
-
 void Cursor2D::Process() {
 	if ((*cho).size() == 0) return;
 
+	//カーソルの移動
 	if (Key[KEY_INPUT_DOWN] == 1) {
 		Recalculation();
 		for (auto& i : cal_result) {
@@ -102,9 +97,16 @@ void Cursor2D::Process() {
 			}
 		}
 	}
+
+
+	//選択
+	(*cho)[slct]->Select();
+
+	//決定
+	if (Key[KEY_INPUT_Z] == 1)
+		(*cho)[slct]->Click();
 }
 
-//角度の再計算
 void Cursor2D::Recalculation() {
 	cal_result.clear();
 
@@ -120,6 +122,15 @@ void Cursor2D::Recalculation() {
 }
 
 //------------------------------------------------
+
+ChoiceMgr::ChoiceMgr(Cursor* c) {
+	if (c != nullptr)
+		crsr = c;
+	else
+		crsr = new Cursor();
+	 
+	crsr->set(&cho);
+}
 
 ChoiceMgr::~ChoiceMgr() {
 	for (auto& i : cho)

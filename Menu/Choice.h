@@ -30,23 +30,19 @@ protected:
 	int dx = 0, dy = 0;
 	vector<Choice*>* cho;
 	int slct = 0;
+	vector<Vector2D> cal_result;
 
 public:
-	Cursor() {}
-	Cursor(vector<Choice*>* cho);
 	virtual void Process();
 	virtual void Draw();
+	void set(vector<Choice*>* cho);
 };
 
-class Cursor2D : public Cursor
-{
-	vector<Vector2D> cal_result;
-public:
-	Cursor2D(vector<Choice*>* cho);
-	void Process();
+class Cursor2D : public Cursor{
+protected:
+	virtual void Process();
 	void Recalculation();
 };
-
 
 class ChoiceMgr : public WindowContent
 {
@@ -55,7 +51,7 @@ protected:
 	Cursor *crsr;
 
 public:
-	ChoiceMgr() { crsr = new Cursor2D(&cho); }
+	ChoiceMgr(Cursor* crsr = nullptr);
 	~ChoiceMgr();
 	void Process();
 	void Draw();
